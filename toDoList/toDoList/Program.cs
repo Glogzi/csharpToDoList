@@ -2,39 +2,50 @@
 
 namespace toDoList {
     internal class Program {
-        static void response(string[] msg) {
+        static string response(string[] msg) {
             string[] help = File.ReadAllLines("help.txt");
-            string id = "0";
+            int id = 0;
+            try {
+                string[] allList = File.ReadAllLines("toDo.txt");
+                for (int i = 0; i < allList.Length; i++) {
+                    id++;
+                }
+            }
+            catch {
+                File.Create("./toDo.txt");
+                id = 1;
+            }
+            string strID = Convert.ToString(id);
             switch (msg[0].ToLower()) {
                 case "help":
                     foreach (string line in help) {
                         Console.WriteLine(line);
                     }
-                    return;
+                    return "";
                 case "add":
-                    try {
-                        foreach (string word in msg) {
-                            if (word != msg[0]) {
-                                File.AppendAllText("Things.txt", word+" ");
-                                continue;
-                            }
-                            File.AppendAllText("Things.txt", id+" ");
+                    foreach (string word in msg) {
+                        if (word != msg[0]) {
+                            File.AppendAllText("toDo.txt", word+" ");
+                            continue;
                         }
-                        File.AppendAllText("Things.txt", "\n");
+                        File.AppendAllText("toDo.txt", strID+" ");
                     }
-                    catch {
-                        File.Create("./Things.txt");
-                    }
-                    return;
+
+                    File.AppendAllText("toDo.txt", "\n");
+                    return "added to an toDo list";
+                
+                default:
+                    return "command not found";
             }
         }
         static void Main(string[] args) {
             Console.WriteLine("welcome to console toDo list");
-            Console.Write("write help to get help with commands\n>");
+            Console.WriteLine("write help to get help with commands");
             while (true){
+                Console.Write(">");
                 string usrInput = Console.ReadLine();
                 string[] usrInputArray = usrInput.Split(' ');
-                response(usrInputArray);
+                Console.WriteLine(response(usrInputArray));
             }
         }
     }
