@@ -7,7 +7,7 @@ namespace toDoList {
             int id = 1;
             string[] allList = new string[1];
             allList = File.ReadAllLines("toDo.toDo");
-            for (int i = 0; i < allList.Length; i++) {
+            for (int i = 1; i <= allList.Length; i++) {
                 id++;
             }
             string strID = Convert.ToString(id);
@@ -19,7 +19,7 @@ namespace toDoList {
                 case "show":
                     return extraCommands.show(allList);
                 case "mark":
-                    return extraCommands.mark(msg, allList, "mark");
+                    return extraCommands.mark(msg, allList);
                 case "unmark":
                     return extraCommands.mark(msg, allList, "unmark");
                 default:
@@ -72,13 +72,38 @@ namespace toDoList {
             }
             return "";
         }
-        public static string mark(string[] msg, string[] list, string mode) {
-            string red = "\x1b[31m";
-            string reset = "\x1b[0m";
-            int line = Convert.ToInt32(msg[1]);
-            if (mode == "mark") {
-                list[line] = red + list[line] + reset;
+        public static string mark(string[] msg, string[] list, string mode = "mark") {
+            string red = "\x1b[31m ";
+            string reset = " \x1b[0m";
+            int line;
+            try {
+                line = Convert.ToInt32(msg[1]);
             }
+            catch {
+                return "wrong input";
+            }
+            
+            if (mode == "unmark") {
+                try {
+                    string[] splitedLine = list[line-1].Split(" ");
+                    if (splitedLine[0] != "\x1b[31m") { return "there's nothing to unmark"; }
+                    splitedLine[0] = "";
+                    splitedLine[splitedLine.Length - 1] = "";
+                    //whoever is reading this, warning this can cause serious brain damage
+                    for(int i = 1; i < splitedLine.Length; i++) {
+                        splitedLine[i] = splitedLine[i] + " ";
+                    }
+                    //end of brain damage, i needed spacebar but not for first and last index of an array
+                    list[line - 1] = String.Join("", splitedLine);
+                    File.WriteAllLines("./toDo.toDo", list);
+                    return $"unmarked line with id {line}";
+                }
+                catch {
+                    return "there's nothing to unmark";
+                }
+                
+            }
+            list[line - 1] = red + list[line-1] + reset;
             File.WriteAllLines("./toDo.toDo", list);
             return $"marked line with id {line}";
         }
