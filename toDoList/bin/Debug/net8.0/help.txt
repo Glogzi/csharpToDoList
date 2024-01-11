@@ -1,0 +1,7 @@
+help - "shows all commands"
+add [name] - "adds to an to do list"
+mark [thing ID] - "marks thing you just did"
+del [thing ID] - "deletes something from your list"
+edit [thing ID]- "edits"
+delAll - "deletes all to Do list"
+show - "shows all of the to Do list"
