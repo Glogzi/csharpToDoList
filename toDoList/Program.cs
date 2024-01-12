@@ -1,12 +1,10 @@
 ﻿using System.Diagnostics;
-using System.Text.RegularExpressions;
 
 namespace toDoList {
     internal class Program {
         static string response(string[] msg) {
             int id = 1;
-            string[] allList = new string[1];
-            allList = File.ReadAllLines("toDo.toDo");
+            string[] allList = File.ReadAllLines("toDo.toDo");
             for (int i = 1; i <= allList.Length; i++) {
                 id++;
             }
@@ -22,6 +20,8 @@ namespace toDoList {
                     return extraCommands.mark(msg, allList);
                 case "unmark":
                     return extraCommands.mark(msg, allList, "unmark");
+                case "delall":
+                    return extraCommands.delAll(allList);
                 default:
                     return "command not found";
             }
@@ -40,6 +40,7 @@ namespace toDoList {
     }
     public class extraCommands {
         public static void create() {
+            //i need to reload program, after creating file
             if (!File.Exists("./toDo.toDo")){
                 File.Create("./toDo.toDo");
                 Process.Start("./toDoList.exe");
@@ -89,23 +90,22 @@ namespace toDoList {
                     if (splitedLine[0] != "\x1b[31m") { return "there's nothing to unmark"; }
                     splitedLine[0] = "";
                     splitedLine[splitedLine.Length - 1] = "";
-                    //whoever is reading this, warning this can cause serious brain damage
-                    for(int i = 1; i < splitedLine.Length; i++) {
-                        splitedLine[i] = splitedLine[i] + " ";
-                    }
-                    //end of brain damage, i needed spacebar but not for first and last index of an array
-                    list[line - 1] = String.Join("", splitedLine);
+                    list[line - 1] = String.Join(" ", splitedLine);
+                    list[line - 1] = list[line - 1].Trim();
                     File.WriteAllLines("./toDo.toDo", list);
                     return $"unmarked line with id {line}";
                 }
                 catch {
                     return "there's nothing to unmark";
                 }
-                
             }
             list[line - 1] = red + list[line-1] + reset;
             File.WriteAllLines("./toDo.toDo", list);
             return $"marked line with id {line}";
+        }
+        public static string delAll(string[] list) {
+            File.WriteAllLines("./toDo.toDo", []);
+            return "deleted all lines";
         }
     }
 }
