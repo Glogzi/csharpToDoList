@@ -22,6 +22,8 @@ namespace toDoList {
                     return extraCommands.mark(msg, allList, "unmark");
                 case "delall":
                     return extraCommands.delAll(allList);
+                case "del":
+                    return extraCommands.del(allList, msg);
                 default:
                     return "command not found";
             }
@@ -106,6 +108,33 @@ namespace toDoList {
         public static string delAll(string[] list) {
             File.WriteAllLines("./toDo.toDo", []);
             return "deleted all lines";
+        }
+        public static string del(string[] list, string[] msg) {
+            int id;
+            try {
+                id = Convert.ToInt32(msg[1]);
+            }
+            catch {
+                return "wrong input";
+            }
+            
+            bool wasOneToDelete = false;
+            string[] newList = new string[list.Length-1];
+            for (int line = 0; line < list.Length; line++) {
+                if (line != id-1) {
+                    if (wasOneToDelete) {
+                        newList[line - 1] = list[line];
+                        continue;
+                    }
+                    newList[line] = list[line];
+                }
+                else {
+                    wasOneToDelete = true;
+                }
+            }
+            File.WriteAllLines("toDo.toDo", newList);
+            return $"line with id: {id} was deleted";
+            // to do for next day: make the id will change with deleting, and crushing after typing too big number
         }
     }
 }
