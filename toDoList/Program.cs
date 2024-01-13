@@ -41,6 +41,16 @@ namespace toDoList {
         }
     }
     public class extraCommands {
+        static string[] reloadId(string[] list) {
+            int id = 1;
+            for (int line = 0; line < list.Length; line++) {
+                string[] spltedLine = list[line].Split(". ");
+                spltedLine[0] = Convert.ToString(id);
+                id++;
+                list[line] = String.Join(". ", spltedLine);
+            }
+            return list;
+        }
         public static void create() {
             //i need to reload program, after creating file
             if (!File.Exists("./toDo.toDo")){
@@ -120,21 +130,28 @@ namespace toDoList {
             
             bool wasOneToDelete = false;
             string[] newList = new string[list.Length-1];
-            for (int line = 0; line < list.Length; line++) {
-                if (line != id-1) {
-                    if (wasOneToDelete) {
-                        newList[line - 1] = list[line];
-                        continue;
+            try {
+                for (int line = 0; line < list.Length; line++) {
+                    if (line != id - 1) {
+                        if (wasOneToDelete) {
+                            newList[line - 1] = list[line];
+                            continue;
+                        }
+                        newList[line] = list[line];
                     }
-                    newList[line] = list[line];
+                    else {
+                        wasOneToDelete = true;
+                    }
                 }
-                else {
-                    wasOneToDelete = true;
-                }
+                //changing id at the start of a line
+                newList = reloadId(newList);
+                File.WriteAllLines("toDo.toDo", newList);
+                return $"line with id: {id} was deleted";
             }
-            File.WriteAllLines("toDo.toDo", newList);
-            return $"line with id: {id} was deleted";
-            // to do for next day: make the id will change with deleting, and crushing after typing too big number
+            catch {
+                return "wrong input, probably too high id";
+            }
+            
         }
     }
 }
