@@ -24,6 +24,8 @@ namespace toDoList {
                     return extraCommands.delAll(allList);
                 case "del":
                     return extraCommands.del(allList, msg);
+                case "edit":
+                    return extraCommands.edit(msg, allList);
                 default:
                     return "command not found";
             }
@@ -50,6 +52,34 @@ namespace toDoList {
                 list[line] = String.Join(". ", spltedLine);
             }
             return list;
+        }
+        public static string edit(string[] msg, string[] list) {
+            int id;
+            try {
+                id = Convert.ToInt32(msg[1]) - 1;
+            }
+            catch {
+                return "incorrect id";
+            }
+            string[] editToWhatArr = new string[msg.Length-1];
+            editToWhatArr[0] = $"{msg[1]}.";
+            for (int i = 1; i < editToWhatArr.Length; i++) {
+                editToWhatArr[i] = msg[i + 1]; 
+            }
+            string editToWhat = String.Join(" ", editToWhatArr);
+            try {
+                for (int line = 1; line <= list.Length; line++) {
+                    if (id == line) {
+                        list[line] = editToWhat;
+                        File.WriteAllLines("toDo.toDo", list);
+                        return $"line with id {msg[1]} edited";
+                    }
+                }
+                return $"line with id {msg[1]} not found";
+            }
+            catch {
+                return $"line with id {msg[1]} not found";
+            }
         }
         public static void create() {
             //i need to reload program, after creating file
@@ -111,9 +141,14 @@ namespace toDoList {
                     return "there's nothing to unmark";
                 }
             }
-            list[line - 1] = red + list[line-1] + reset;
-            File.WriteAllLines("./toDo.toDo", list);
-            return $"marked line with id {line}";
+            try {
+                list[line - 1] = red + list[line-1] + reset;
+                File.WriteAllLines("./toDo.toDo", list);
+                return $"marked line with id {line}";
+            }
+            catch {
+                return "wrong input";
+            }
         }
         public static string delAll(string[] list) {
             File.WriteAllLines("./toDo.toDo", []);
@@ -143,15 +178,15 @@ namespace toDoList {
                         wasOneToDelete = true;
                     }
                 }
-                //changing id at the start of a line
+                //changing id at the start of a lin
+                //e
                 newList = reloadId(newList);
                 File.WriteAllLines("toDo.toDo", newList);
                 return $"line with id: {id} was deleted";
             }
             catch {
-                return "wrong input, probably too high id";
+                return "wrong input";
             }
-            
         }
     }
 }
